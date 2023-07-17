@@ -12,6 +12,7 @@ from paho.mqtt import client as mqtt_client
 import time
 import random
 import logging
+import sys
 
 FIRST_RECONNECT_DELAY = 1
 RECONNECT_RATE = 2
@@ -20,17 +21,18 @@ MAX_RECONNECT_DELAY = 60
 
 DEBUG = True
 
+broker = cfg["MQTT_BROKER"]
+port = cfg["MQTT_PORT"]
+user = cfg["MQTT_USER"]
+password = cfg["MQTT_PASSWORD"]
+client_id = f'publish-{random.randint(0, 1000)}'
+topic = cfg["MQTT_BASE_TOPIC"] + "/" + cfg["PV_DEVICE_ID"]
+
 #-----------------------------
 def connect_mqtt():
-  broker = cfg["MQTT_BROKER"]
-  port = cfg["MQTT_PORT"]
-  user = cfg["MQTT_USER"]
-  password = cfg["MQTT_PASSWORD"]
-  client_id = f'publish-{random.randint(0, 1000)}'
  
   clogger.debug("connecting to broker " + broker + " on port " + str(port) + " with client_id " + client_id)
 
-  topic = cfg["MQTT_BASE_TOPIC"] + "/" + cfg["PV_DEVICE_ID"]
 
   def on_connect(client, userdata, flags, rc):
     print("fubar")
@@ -38,25 +40,25 @@ def connect_mqtt():
       clogger.info("Connected to MQTT Broker!")
     else:
       clogger.warn("Failed to connect, return code %d\n", rc)
-
-  def on_disconnect(client, userdata, rc):
-    clogger.warn("Disconnected with result code: %s", rc)
-    reconnect_count, reconnect_delay = 0, FIRST_RECONNECT_DELAY
-    while reconnect_count < MAX_RECONNECT_COUNT:
-      clogger.info("Reconnecting in %d seconds...", reconnect_delay)
-      time.sleep(reconnect_delay)
   
-      try:
-        client.reconnect()
-        clogger.info("Reconnected successfully!")
-        return
-      except Exception as err:
-        clogger.error("%s. Reconnect failed. Retrying...", err)
-
-      reconnect_delay *= RECONNECT_RATE
-      reconnect_delay = min(reconnect_delay, MAX_RECONNECT_DELAY)
-      reconnect_count += 1
-    clogger.info("Reconnect failed after %s attempts. Exiting...", reconnect_count)
+#  def on_disconnect(client, userdata, rc):
+#    clogger.warn("Disconnected with result code: %s", rc)
+#    reconnect_count, reconnect_delay = 0, FIRST_RECONNECT_DELAY
+#    while reconnect_count < MAX_RECONNECT_COUNT:
+#      clogger.info("Reconnecting in %d seconds...", reconnect_delay)
+#      time.sleep(reconnect_delay)
+#  
+#      try:
+#        client.reconnect()
+#        clogger.info("Reconnected successfully!")
+#        return
+#      except Exception as err:
+#        clogger.error("%s. Reconnect failed. Retrying...", err)
+#  
+#      reconnect_delay *= RECONNECT_RATE
+#      reconnect_delay = min(reconnect_delay, MAX_RECONNECT_DELAY)
+#      reconnect_count += 1
+#    clogger.info("Reconnect failed after %s attempts. Exiting...", reconnect_count)
 
   # Set Connecting Client ID
   client = mqtt_client.Client(client_id)
@@ -65,9 +67,10 @@ def connect_mqtt():
     client.username_pw_set(username, password)
 
   client.on_connect = on_connect
-  client.on_disconnect = on_disconnect
+  #client.on_disconnect = on_disconnect
   
-  client.connect(broker, port, 60)
+  #client.connect(broker, port, 60)
+  client.connect(broker, port)
   return client
 
 #-----------------------------
@@ -109,30 +112,33 @@ def show_device_data( api ):
 def post_mqtt_device_data( api, client ):
   data = api.query_device_data( cfg["PV_DEVICE_ID"] )
   #flogger.debug( json.dumps(data, indent=2) )
-  #clogger.debug( json.dumps(data, indent=2) )
+  clogger.debug( json.dumps(data) )
+  data_string = json.dumps(data)
+  send_return = client.publish(topic, data_string)
+  if send_return.rc == 0:
+    clogger.info("Message successfully sent to topic: " + topic)
+  else:
+    clogger.warn("Message could not be sent! (rc=" + string(send_return.rc) +")")
 
 def configure_logging():
-  global flogger
-  flogger = logging.getLogger('file_logger')
-  flogger.setLevel(getattr(logging,cfg['LOGLEVEL']))
+  formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s:%(message)s',datefmt='%Y%m%d %H:%M:%S')
 
   global clogger
   clogger = logging.getLogger('console_logger')
   clogger.setLevel(getattr(logging,cfg['LOGLEVEL']))
 
-  ch = logging.StreamHandler()
+  ch = logging.StreamHandler(sys.stdout)
   ch.setLevel(getattr(logging,cfg['LOGLEVEL']))
-
-  fh = logging.FileHandler(cfg['LOGFILE'])
-  fh.setLevel(getattr(logging,cfg['LOGLEVEL']))
-
-  formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s:%(message)s',datefmt='%Y%m%d %H:%M:%S')
-  
   ch.setFormatter(formatter)
   clogger.addHandler(ch)
-   
-  fh.setFormatter(formatter)
-  flogger.addHandler(fh)
+
+#  global flogger
+#  flogger = logging.getLogger('file_logger')
+#  flogger.setLevel(getattr(logging,cfg['LOGLEVEL']))
+#  fh = logging.FileHandler(cfg['LOGFILE'])
+#  fh.setLevel(getattr(logging,cfg['LOGLEVEL']))
+#  fh.setFormatter(formatter)
+#  flogger.addHandler(fh)
 
 #-------------------------------
 def main():
@@ -140,9 +146,10 @@ def main():
   api = MTECapi.MTECapi()
   client = connect_mqtt()
 
-  post_mqtt_device_data( api, client )
+  while True:
+    post_mqtt_device_data( api, client )
+    time.sleep(int(cfg['MQTT_INTERVAL']))
   print( "Bye!")
-
 #-------------------------------
 if __name__ == '__main__':
   main()
