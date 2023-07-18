@@ -110,15 +110,25 @@ def show_device_data( api ):
     print( json.dumps(data, indent=2) )
 
 def post_mqtt_device_data( api, client ):
+  topic_this = topic + "/json"
   data = api.query_device_data( cfg["PV_DEVICE_ID"] )
   #flogger.debug( json.dumps(data, indent=2) )
   clogger.debug( json.dumps(data) )
   data_string = json.dumps(data)
-  send_return = client.publish(topic, data_string)
-  if send_return.rc == 0:
-    clogger.info("Message successfully sent to topic: " + topic)
+  send_return = client.publish(topic_this, data_string)
+  if send_return.rc == mqtt_client.MQTT_ERR_SUCCESS:
+    clogger.info("Message successfully sent to topic: " + topic_this)
   else:
     clogger.warn("Message could not be sent! (rc=" + string(send_return.rc) +")")
+
+def post_mqtt_alive( client , state):
+  topic_this = topic + "/alive"
+  send_return = client.publish(topic_this, state, 2, True)
+  if send_return.rc == mqtt_client.MQTT_ERR_SUCCESS:
+    clogger.info("Alive Message successfully sent to topic: " + topic_this)
+  else:
+    clogger.warn("Alive Message could not be sent! (rc=" + string(send_return.rc) +")")
+  
 
 def configure_logging():
   formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s:%(message)s',datefmt='%Y%m%d %H:%M:%S')
@@ -147,8 +157,11 @@ def main():
   client = connect_mqtt()
 
   while True:
+    post_mqtt_alive( client, "ON")
     post_mqtt_device_data( api, client )
     time.sleep(int(cfg['MQTT_INTERVAL']))
+
+  post_mqtt_alive( client, "OFF")
   print( "Bye!")
 #-------------------------------
 if __name__ == '__main__':
