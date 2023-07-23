@@ -1,0 +1,359 @@
+UID: mqtt:topic:1eabb7ea9a:0339754271
+label: Wechselrichter - API (MQTT)
+thingTypeUID: mqtt:topic
+configuration:
+  payloadNotAvailable: OFF
+  availabilityTopic: m-tec/1677228546636435457/alive
+  payloadAvailable: ON
+bridgeUID: mqtt:broker:1eabb7ea9a
+location: Wechselrichter
+channels:
+  - id: inverter_devicestatus
+    channelTypeUID: mqtt:number
+    label: Inverter - Device Status
+    description: ""
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/inverter/deviceStatus
+  - id: inverter_devicename
+    channelTypeUID: mqtt:string
+    label: Inverter - Device Name
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/inverter/deviceName
+  - id: inverter_deviceSn
+    channelTypeUID: mqtt:string
+    label: Inverter - Device Sn
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/inverter/deviceSn
+  - id: inverter_deviceCheckCode
+    channelTypeUID: mqtt:string
+    label: Inverter - Device Check Code
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/inverter/deviceCheckCode
+  - id: inverter_modelType
+    channelTypeUID: mqtt:string
+    label: Inverter - Model Type
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/inverter/modelType
+  - id: inverter_deviceType
+    channelTypeUID: mqtt:string
+    label: Inverter - Device Type
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/inverter/deviceType
+  - id: inverter_firmwareType
+    channelTypeUID: mqtt:string
+    label: Inverter - Firmware Type
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/inverter/firmwareType
+  - id: inverter_ratedPower
+    channelTypeUID: mqtt:string
+    label: Inverter - Rated Power
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/inverter/ratedPower
+  - id: inverter_hybridWorkMode
+    channelTypeUID: mqtt:string
+    label: Inverter - Hybrid Work Mode
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/inverter/hybirdWorkMode
+  - id: inverter_antiStatus
+    channelTypeUID: mqtt:number
+    label: Inverter - Anti Status
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/inverter/antiStatus
+  - id: inverter_antiSetting
+    channelTypeUID: mqtt:string
+    label: Inverter - Anti Setting
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/inverter/antiSetting
+  - id: inverter_TimeTotal
+    channelTypeUID: mqtt:string
+    label: Inverter - Time Total
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/inverter/TimeTotal
+  - id: inverter_Temperature
+    channelTypeUID: mqtt:string
+    label: Inverter - Temperature
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/inverter/Temperature1
+  - id: inverter_curPower
+    channelTypeUID: mqtt:string
+    label: Inverter - Current Power
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/inverter/curPower
+  - id: inverter_dayElec
+    channelTypeUID: mqtt:string
+    label: Inverter - Day Electricity Produced
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/inverter/dayElec
+  - id: inverter_totalElec
+    channelTypeUID: mqtt:string
+    label: Inverter - Total Electricity Produced
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/inverter/totalElec
+  - id: battery_batteryStatus
+    channelTypeUID: mqtt:number
+    label: Battery - Status
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/battery/batteryStatus
+  - id: battery_batteryType
+    channelTypeUID: mqtt:string
+    label: Battery - Type
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/battery/batteryType
+  - id: battery_battery_P
+    channelTypeUID: mqtt:string
+    label: Battery - Power
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/battery/Battery_P
+  - id: battery_battery_V
+    channelTypeUID: mqtt:string
+    label: Battery - Voltage
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/battery/Battery_V
+  - id: battery_battery_I
+    channelTypeUID: mqtt:string
+    label: Battery - Current
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/battery/Battery_I
+  - id: battery_BMSPackTemperature
+    channelTypeUID: mqtt:string
+    label: Battery - BMS Pack Temperature
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/battery/BMSPackTemperature
+  - id: battery_soh
+    channelTypeUID: mqtt:string
+    label: Battery - SOH
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/battery/SOH
+  - id: battery_soc
+    channelTypeUID: mqtt:string
+    label: Battery - SOC
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/battery/SOC
+  - id: battery_I_charging_limit
+    channelTypeUID: mqtt:string
+    label: Battery - Current Charging Limit
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/battery/IChargingLimit
+  - id: battery_I_discharge_limit
+    channelTypeUID: mqtt:string
+    label: Battery - Current Discharge Limit
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/battery/IDischargeLimit
+  - id: battery_min_cell_voltage
+    channelTypeUID: mqtt:string
+    label: Battery - Minimal Cell Voltage
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/battery/MinCellVoltage
+  - id: battery_max_cell_voltage
+    channelTypeUID: mqtt:string
+    label: Battery - Maximum Cell Voltage
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/battery/MaxCellVoltage
+  - id: grid_invt_a_p
+    channelTypeUID: mqtt:number
+    label: Grid - Inverter Phase A Power
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/grid/Invt_A_P
+  - id: grid_invt_b_p
+    channelTypeUID: mqtt:number
+    label: Grid - Inverter Phase B Power
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/grid/Invt_B_P
+  - id: grid_invt_c_p
+    channelTypeUID: mqtt:number
+    label: Grid - Inverter Phase C Power
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/grid/Invt_C_P
+  - id: grid_backup_a_v
+    channelTypeUID: mqtt:number
+    label: Grid - Backup Phase A Voltage
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/grid/Backup_A_V
+  - id: grid_backup_b_v
+    channelTypeUID: mqtt:number
+    label: Grid - Backup Phase B Voltage
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/grid/Backup_B_V
+  - id: grid_backup_c_v
+    channelTypeUID: mqtt:number
+    label: Grid - Backup Phase C Voltage
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/grid/Backup_C_V
+  - id: grid_backup_a_f
+    channelTypeUID: mqtt:number
+    label: Grid - Backup Phase A Frequency
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/grid/Backup_A_F
+  - id: grid_backup_b_f
+    channelTypeUID: mqtt:number
+    label: Grid - Backup Phase B Frequency
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/grid/Backup_B_F
+  - id: grid_backup_c_f
+    channelTypeUID: mqtt:number
+    label: Grid - Backup Phase C Frequency
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/grid/Backup_C_F
+  - id: grid_backup_a_i
+    channelTypeUID: mqtt:number
+    label: Grid - Backup Phase A Current
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/grid/Backup_A_I
+  - id: grid_backup_b_i
+    channelTypeUID: mqtt:number
+    label: Grid - Backup Phase B Current
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/grid/Backup_B_I
+  - id: grid_backup_c_i
+    channelTypeUID: mqtt:number
+    label: Grid - Backup Phase C Current
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/grid/Backup_C_I
+  - id: grid_backup_a_p
+    channelTypeUID: mqtt:number
+    label: Grid - Backup Phase A Power
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/grid/Backup_A_P
+  - id: grid_backup_b_p
+    channelTypeUID: mqtt:number
+    label: Grid - Backup Phase B Power
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/grid/Backup_B_P
+  - id: grid_backup_c_p
+    channelTypeUID: mqtt:number
+    label: Grid - Backup Phase C Power
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/grid/Backup_C_P
+  - id: grid_vgrid_phase_a
+    channelTypeUID: mqtt:number
+    label: Grid - Grid Phase A Voltage
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/grid/Vgrid_PhaseA
+  - id: grid_vgrid_phase_b
+    channelTypeUID: mqtt:number
+    label: Grid - Grid Phase B Voltage
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/grid/Vgrid_PhaseB
+  - id: grid_vgrid_phase_c
+    channelTypeUID: mqtt:number
+    label: Grid - Grid Phase C Voltage
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/grid/Vgrid_PhaseC
+  - id: grid_igrid_phase_a
+    channelTypeUID: mqtt:number
+    label: Grid - Grid Phase A Current
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/grid/Igrid_PhaseA
+  - id: grid_igrid_phase_b
+    channelTypeUID: mqtt:number
+    label: Grid - Grid Phase B Current
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/grid/Igrid_PhaseB
+  - id: grid_igrid_phase_c
+    channelTypeUID: mqtt:number
+    label: Grid - Grid Phase C Current
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/grid/Igrid_PhaseC
+  - id: grid_pmeter_phase_a
+    channelTypeUID: mqtt:number
+    label: Grid - Powermeter Phase A Power
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/grid/PmeterPhaseA
+  - id: grid_pmeter_phase_b
+    channelTypeUID: mqtt:number
+    label: Grid - Powermeter Phase B Power
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/grid/PmeterPhaseB
+  - id: grid_pmeter_phase_c
+    channelTypeUID: mqtt:number
+    label: Grid - Powermeter Phase C Power
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/grid/PmeterPhaseC
+
+  - id: pv_power_pv_1
+    channelTypeUID: mqtt:number
+    label: PV - Power PV String 1
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/PV/powerPv1
+  - id: pv_power_pv_2
+    channelTypeUID: mqtt:number
+    label: PV - Power PV String 2
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/PV/powerPv2
+  - id: pv_v_pv_1
+    channelTypeUID: mqtt:number
+    label: PV - Voltage PV String 1
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/PV/Vpv1
+  - id: pv_v_pv_2
+    channelTypeUID: mqtt:number
+    label: PV - Voltage PV String 2
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/PV/Vpv2
+  - id: pv_i_pv_1
+    channelTypeUID: mqtt:number
+    label: PV - Current PV String 1
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/PV/Ipv1
+  - id: pv_i_pv_2
+    channelTypeUID: mqtt:number
+    label: PV - Current PV String 2
+    description: null
+    configuration:
+      stateTopic: m-tec/1677228546636435457/detail/PV/Ipv2
