@@ -26,7 +26,7 @@ port = cfg["MQTT_PORT"]
 user = cfg["MQTT_USER"]
 password = cfg["MQTT_PASSWORD"]
 client_id = f'publish-{random.randint(0, 1000)}'
-topic = cfg["MQTT_BASE_TOPIC"] + "/" + cfg["PV_DEVICE_ID"]
+topic_base = cfg["MQTT_BASE_TOPIC"] + "/" + cfg["PV_DEVICE_ID"]
 
 #-----------------------------
 def connect_mqtt():
@@ -109,9 +109,8 @@ def show_device_data( api ):
     print( "--------------------------------------------------------" )
     print( json.dumps(data, indent=2) )
 
-def post_mqtt_device_data( api, client ):
-  topic_this = topic + "/json"
-  data = api.query_device_data( cfg["PV_DEVICE_ID"] )
+def post_mqtt_device_data_json( api, client, data):
+  topic_this = topic_base + "/json"
   #flogger.debug( json.dumps(data, indent=2) )
   clogger.debug( json.dumps(data) )
   data_string = json.dumps(data)
@@ -121,9 +120,47 @@ def post_mqtt_device_data( api, client ):
   else:
     clogger.warn("Message could not be sent! (rc=" + string(send_return.rc) +")")
 
+def convert_to_output(json_obj, prefix=""):
+    result = []
+    for key, value in json_obj.items():
+        obj = dict()
+        if isinstance(value, dict):
+            result.extend(convert_to_output(value, prefix + key + "/"))
+        else:
+            obj[prefix + key] = value
+            result.append(obj)
+            #result.append(prefix + key + ":" + str(value))
+    return result
+
+def post_mqtt_device_data_single_recursive( api , client , data, topic_sub=''):
+  data_detail = convert_to_output(data)
+  topic_this = topic_base + "/detail"
+  for item in data_detail:
+    for key, value in item.items():
+      send_return = client.publish(topic_this + "/" + key, str(value))
+      if send_return.rc == mqtt_client.MQTT_ERR_SUCCESS:
+        clogger.info("Message successfully sent to topic: " + topic_this +"/" + key + ": " + str(value))
+      else:
+        clogger.warn("Message could not be sent! (rc=" + string(send_return.rc) +")")
+
+#  if topic_sub == '':
+#    topic_this = topic_base + "/detail"
+#  else:
+#    topic_this = topic_base + "/detail/" + topic_sub
+#
+#  if isinstance(data, dict):
+#    for key, value in data.items():
+#        print("Schlüssel:", key)
+#        post_mqtt_device_data_single_recursive(api, client, value, key)
+#  elif isinstance(data, list):
+#    for item in data:
+#      post_mqtt_device_data_single_recursive(api, client, item)
+#  else:
+#    print("Wert: /" + topic_sub, data) 
+
 def post_mqtt_alive( client , state):
-  topic_this = topic + "/alive"
-  send_return = client.publish(topic_this, state, 2, True)
+  topic_this = topic_base + "/alive"
+  send_return = client.publish(topic_this, payload=state, qos=0, retain=True)
   if send_return.rc == mqtt_client.MQTT_ERR_SUCCESS:
     clogger.info("Alive Message successfully sent to topic: " + topic_this)
   else:
@@ -154,11 +191,17 @@ def configure_logging():
 def main():
   configure_logging()
   api = MTECapi.MTECapi()
+
   client = connect_mqtt()
 
   while True:
-    post_mqtt_alive( client, "ON")
-    post_mqtt_device_data( api, client )
+    data = api.query_device_data( cfg['PV_DEVICE_ID'] )
+    if data != False:
+      post_mqtt_alive( client, "ON" )
+      #post_mqtt_device_data_json( api, client, data )
+      post_mqtt_device_data_single_recursive( api, client, data)
+    else:
+      post_mqtt_alive( client, "OFF" ) 
     time.sleep(int(cfg['MQTT_INTERVAL']))
 
   post_mqtt_alive( client, "OFF")
