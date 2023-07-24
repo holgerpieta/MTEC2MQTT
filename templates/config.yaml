@@ -1,7 +1,19 @@
 ---
+LOGLEVEL: DEBUG
+LOGFILE: mtec2mqtt.log
+
 # Add your data here:
 PV_EMAIL : ""               # e-mail address you used to register at M-TEC portal
 PV_PASSWORD : ""            # password you used to register at M-TEC portal
+PV_STATION_ID: ""
+PV_DEVICE_ID: ""
+
+MQTT_BROKER: ""             # Hostname of the mqtt-broker
+MQTT_PORT: ""               # Port of the mqtt-broker
+MQTT_BASE_TOPIC: ""         # base-topic, which should be used to post messages to mqtt
+MQTT_USER: ""               # Username to authenticate to the mqtt-broker (optional)
+MQTT_PASSWORD: ""           # Password to authenticate to the mqtt-broker (optional)
+MQTT_INTERVAL: "60"         # Interval (in seconds) used to query api and post values to Broker (in seconds)
 
 ##########################
 # Base config - probably no need to change
