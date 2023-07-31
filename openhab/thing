@@ -63,7 +63,7 @@ channels:
     configuration:
       stateTopic: m-tec/1677228546636435457/detail/inverter/hybirdWorkMode
   - id: inverter_antiStatus
-    channelTypeUID: mqtt:number
+    channelTypeUID: mqtt:string
     label: Inverter - Anti Status
     description: null
     configuration:
@@ -74,18 +74,21 @@ channels:
     description: null
     configuration:
       stateTopic: m-tec/1677228546636435457/detail/inverter/antiSetting
+      transformationPattern: REGEX:(\d.\d).*
   - id: inverter_TimeTotal
     channelTypeUID: mqtt:string
     label: Inverter - Time Total
     description: null
     configuration:
       stateTopic: m-tec/1677228546636435457/detail/inverter/TimeTotal
+      transformationPattern: REGEX:(/d).*
   - id: inverter_Temperature
     channelTypeUID: mqtt:string
     label: Inverter - Temperature
     description: null
     configuration:
       stateTopic: m-tec/1677228546636435457/detail/inverter/Temperature1
+      transformationPattern: REGEX:(\d*.\d*).*
   - id: inverter_curPower
     channelTypeUID: mqtt:string
     label: Inverter - Current Power
@@ -104,6 +107,7 @@ channels:
     description: null
     configuration:
       stateTopic: m-tec/1677228546636435457/detail/inverter/totalElec
+      transformationPattern: REGEX:(\d.\d).*
   - id: battery_batteryStatus
     channelTypeUID: mqtt:number
     label: Battery - Status
@@ -122,60 +126,70 @@ channels:
     description: null
     configuration:
       stateTopic: m-tec/1677228546636435457/detail/battery/Battery_P
+      transformationPattern: REGEX:(-?\d*.\d*).*
   - id: battery_battery_V
     channelTypeUID: mqtt:string
     label: Battery - Voltage
     description: null
     configuration:
       stateTopic: m-tec/1677228546636435457/detail/battery/Battery_V
+      transformationPattern: REGEX:(\d*.\d*).*
   - id: battery_battery_I
     channelTypeUID: mqtt:string
     label: Battery - Current
     description: null
     configuration:
       stateTopic: m-tec/1677228546636435457/detail/battery/Battery_I
+      transformationPattern: REGEX:(-?\d*.\d*).*
   - id: battery_BMSPackTemperature
     channelTypeUID: mqtt:string
     label: Battery - BMS Pack Temperature
     description: null
     configuration:
       stateTopic: m-tec/1677228546636435457/detail/battery/BMSPackTemperature
+      transformationPattern: REGEX:(-?\d*.\d*).*
   - id: battery_soh
     channelTypeUID: mqtt:string
     label: Battery - SOH
     description: null
     configuration:
       stateTopic: m-tec/1677228546636435457/detail/battery/SOH
+      transformationPattern: REGEX:(\d*.\d*).*
   - id: battery_soc
     channelTypeUID: mqtt:string
     label: Battery - SOC
     description: null
     configuration:
       stateTopic: m-tec/1677228546636435457/detail/battery/SOC
+      transformationPattern: REGEX:(\d*.\d*).*
   - id: battery_I_charging_limit
     channelTypeUID: mqtt:string
     label: Battery - Current Charging Limit
     description: null
     configuration:
       stateTopic: m-tec/1677228546636435457/detail/battery/IChargingLimit
-  - id: battery_I_discharge_limit
+      transformationPattern: REGEX:(\d*.\d*).*
+  - id: battery_I_discharging_limit
     channelTypeUID: mqtt:string
     label: Battery - Current Discharge Limit
     description: null
     configuration:
       stateTopic: m-tec/1677228546636435457/detail/battery/IDischargeLimit
+      transformationPattern: REGEX:(\d*.\d*).*
   - id: battery_min_cell_voltage
     channelTypeUID: mqtt:string
     label: Battery - Minimal Cell Voltage
     description: null
     configuration:
       stateTopic: m-tec/1677228546636435457/detail/battery/MinCellVoltage
+      transformationPattern: REGEX:(\d*.\d*).*
   - id: battery_max_cell_voltage
     channelTypeUID: mqtt:string
     label: Battery - Maximum Cell Voltage
     description: null
     configuration:
       stateTopic: m-tec/1677228546636435457/detail/battery/MaxCellVoltage
+      transformationPattern: REGEX:(\d*.\d*).*
   - id: grid_invt_a_p
     channelTypeUID: mqtt:number
     label: Grid - Inverter Phase A Power
@@ -320,7 +334,6 @@ channels:
     description: null
     configuration:
       stateTopic: m-tec/1677228546636435457/detail/grid/PmeterPhaseC
-
   - id: pv_power_pv_1
     channelTypeUID: mqtt:number
     label: PV - Power PV String 1

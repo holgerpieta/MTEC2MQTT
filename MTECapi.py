@@ -355,7 +355,7 @@ class MTECapi:
             # map data into data structure
             data = {}     
             for node in json_data["data"]["config"]:
-                if node["labelId"] == 201:  
+                if node["labelId"] == 202:  
                     
                     data["inverter"] = {}
                     for d in node["data"]:
