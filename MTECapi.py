@@ -353,9 +353,15 @@ class MTECapi:
         json_data = self._do_API_call( url, params=params, method="GET" )
         if json_data["code"] == "1000000":
             # map data into data structure
-            data = {}     
+            data = {}
+
+            # single custom values
+            data["battery_ext"] = {}
+            data["battery_ext"]["ETotalbatteryCharge"] = json_data["data"]["data"]["ETotalbatteryCharge"]
+            data["battery_ext"]["ETotalbatteryDischarge"] = json_data["data"]["data"]["ETotalbatteryDischarge"]
+
             for node in json_data["data"]["config"]:
-                if node["labelId"] == 202:  
+                if node["labelId"] == 201:  
                     
                     data["inverter"] = {}
                     for d in node["data"]:
