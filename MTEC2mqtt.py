@@ -22,7 +22,13 @@ MAX_RECONNECT_DELAY = 60
 DEBUG = True
 
 broker = cfg["MQTT_BROKER"]
+if not broker:
+    raise Exception('MQTT broker cannot be left empty in config.')
 port = cfg["MQTT_PORT"]
+if port:
+    port = int(port)
+else:
+    port = 1883
 user = cfg["MQTT_USER"]
 password = cfg["MQTT_PASSWORD"]
 client_id = f'publish-{random.randint(0, 1000)}'
