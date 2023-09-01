@@ -13,6 +13,7 @@ import time
 import random
 import logging
 import sys
+import uuid
 
 FIRST_RECONNECT_DELAY = 1
 RECONNECT_RATE = 2
@@ -31,8 +32,8 @@ else:
     port = 1883
 user = cfg["MQTT_USER"]
 password = cfg["MQTT_PASSWORD"]
-client_id = f'publish-{random.randint(0, 1000)}'
-topic_base = cfg["MQTT_BASE_TOPIC"] + "/" + cfg["PV_DEVICE_ID"]
+client_id = f'mtec2mqtt-{uuid.uuid4()}'
+topic_base = cfg["MQTT_BASE_TOPIC"] + "/" + cfg["PV_DEVICE_MQTT_ALIAS"] if cfg["PV_DEVICE_MQTT_ALIAS"] else cfg["PV_DEVICE_ID"]
 
 #-----------------------------
 def connect_mqtt():

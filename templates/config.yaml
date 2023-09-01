@@ -5,8 +5,8 @@ LOGFILE: mtec2mqtt.log
 # Add your data here:
 PV_EMAIL : ""               # e-mail address you used to register at M-TEC portal
 PV_PASSWORD : ""            # password you used to register at M-TEC portal
-PV_STATION_ID: ""
-PV_DEVICE_ID: ""
+PV_DEVICE_ID: ""            # ID of the device the data should be fetched from. Can be determined using MTEC_client.py
+PV_DEVICE_MQTT_ALIAS: ""    # Name of the device to be used in the MQTT topic. If left empty, the device ID will be used.
 
 MQTT_BROKER: ""             # Hostname of the mqtt-broker
 MQTT_PORT: ""               # Port of the mqtt-broker, defaults to 1883 if left empty
