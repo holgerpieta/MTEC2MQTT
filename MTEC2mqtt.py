@@ -3,7 +3,13 @@
 This tool enables to query MTECapi and can act as demo on how to use the API
 (c) 2023 by Christian Rödel 
 """
+import logging
+fmt = '%(asctime)s - %(levelname)s:%(message)s'
+datefmt='%Y%m%d %H:%M:%S'
+logging.basicConfig(format=fmt, datefmt=datefmt)
+clogger = logging.getLogger('console_logger')
 from config import cfg
+clogger.setLevel(getattr(logging,cfg['LOGLEVEL']))
 import json
 import datetime
 from dateutil.relativedelta import relativedelta
@@ -11,7 +17,6 @@ import MTECapi
 from paho.mqtt import client as mqtt_client
 import time
 import random
-import logging
 import sys
 import uuid
 
@@ -231,33 +236,13 @@ def post_mqtt_alive( client , state):
     clogger.error("Alive Message could not be sent! (rc=" + string(send_return.rc) +")")
   
 
-def configure_logging():
-  formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s:%(message)s',datefmt='%Y%m%d %H:%M:%S')
-
-  global clogger
-  clogger = logging.getLogger('console_logger')
-  clogger.setLevel(getattr(logging,cfg['LOGLEVEL']))
-
-#  ch = logging.StreamHandler(sys.stdout)
-#  ch.setLevel(getattr(logging,cfg['LOGLEVEL']))
-#  ch.setFormatter(formatter)
-#  clogger.addHandler(ch)
-
-#  global flogger
-#  flogger = logging.getLogger('file_logger')
-#  flogger.setLevel(getattr(logging,cfg['LOGLEVEL']))
-#  fh = logging.FileHandler(cfg['LOGFILE'])
-#  fh.setLevel(getattr(logging,cfg['LOGLEVEL']))
-#  fh.setFormatter(formatter)
-#  flogger.addHandler(fh)
-
 #-------------------------------
 def main():
-  configure_logging()
   api = MTECapi.MTECapi()
 
   client = connect_mqtt()
 
+  deadline = time.time() # Data will be send for the first time about now.
   while True:
     clogger.debug('Fetching data')
     data = api.query_device_data( cfg['PV_DEVICE_ID'] )
@@ -269,7 +254,8 @@ def main():
     else:
       clogger.warn('No data received, device appears to be offline.')
       post_mqtt_alive( client, "OFF" ) 
-    time.sleep(int(cfg['MQTT_INTERVAL']))
+    deadline += int(cfg['MQTT_INTERVAL']) # Update deadline by 60 seconds
+    time.sleep(deadline - time.time()) # Wait until next deadline
 
   post_mqtt_alive( client, "OFF")
   print( "Bye!")
