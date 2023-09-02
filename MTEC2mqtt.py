@@ -38,15 +38,16 @@ topic_base = cfg["MQTT_BASE_TOPIC"] + "/" + cfg["PV_DEVICE_MQTT_ALIAS"] if cfg["
 #-----------------------------
 def connect_mqtt():
  
-  clogger.debug("connecting to broker " + broker + " on port " + str(port) + " with client_id " + client_id)
+  clogger.info("connecting to broker " + broker + " on port " + str(port) + " with client_id " + client_id)
 
 
   def on_connect(client, userdata, flags, rc):
-    print("fubar")
     if rc == 0:
       clogger.info("Connected to MQTT Broker!")
+      client.publish(f'{topic_base}/status', payload='online', qos=2, retain=True)
+      clogger.debug(f'Published status on topic: {topic_base}/status - Payload: online')
     else:
-      clogger.warn("Failed to connect, return code %d\n", rc)
+      clogger.error("Failed to connect, return code %d\n", rc)
   
 #  def on_disconnect(client, userdata, rc):
 #    clogger.warn("Disconnected with result code: %s", rc)
@@ -123,9 +124,9 @@ def post_mqtt_device_data_json( api, client, data):
   data_string = json.dumps(data)
   send_return = client.publish(topic_this, data_string)
   if send_return.rc == mqtt_client.MQTT_ERR_SUCCESS:
-    clogger.info("Message successfully sent to topic: " + topic_this)
+    clogger.debug("Message successfully sent to topic: " + topic_this)
   else:
-    clogger.warn("Message could not be sent! (rc=" + string(send_return.rc) +")")
+    clogger.error("Message could not be sent! (rc=" + string(send_return.rc) +")")
 
 def convert_to_output(json_obj, prefix=""):
     result = []
@@ -146,9 +147,9 @@ def post_mqtt_device_data_single_recursive( api , client , data, topic_sub=''):
     for key, value in item.items():
       send_return = client.publish(topic_this + "/" + key, str(value))
       if send_return.rc == mqtt_client.MQTT_ERR_SUCCESS:
-        clogger.info("Message successfully sent to topic: " + topic_this +"/" + key + ": " + str(value))
+        clogger.debug("Message successfully sent to topic: " + topic_this +"/" + key + ": " + str(value))
       else:
-        clogger.warn("Message could not be sent! (rc=" + string(send_return.rc) +")")
+        clogger.error("Message could not be sent! (rc=" + string(send_return.rc) +")")
 
 #  if topic_sub == '':
 #    topic_this = topic_base + "/detail"
@@ -169,9 +170,9 @@ def post_mqtt_alive( client , state):
   topic_this = topic_base + "/alive"
   send_return = client.publish(topic_this, payload=state, qos=0, retain=True)
   if send_return.rc == mqtt_client.MQTT_ERR_SUCCESS:
-    clogger.info("Alive Message successfully sent to topic: " + topic_this)
+    clogger.debug("Alive Message successfully sent to topic: " + topic_this)
   else:
-    clogger.warn("Alive Message could not be sent! (rc=" + string(send_return.rc) +")")
+    clogger.error("Alive Message could not be sent! (rc=" + string(send_return.rc) +")")
   
 
 def configure_logging():
@@ -181,10 +182,10 @@ def configure_logging():
   clogger = logging.getLogger('console_logger')
   clogger.setLevel(getattr(logging,cfg['LOGLEVEL']))
 
-  ch = logging.StreamHandler(sys.stdout)
-  ch.setLevel(getattr(logging,cfg['LOGLEVEL']))
-  ch.setFormatter(formatter)
-  clogger.addHandler(ch)
+#  ch = logging.StreamHandler(sys.stdout)
+#  ch.setLevel(getattr(logging,cfg['LOGLEVEL']))
+#  ch.setFormatter(formatter)
+#  clogger.addHandler(ch)
 
 #  global flogger
 #  flogger = logging.getLogger('file_logger')
@@ -202,12 +203,15 @@ def main():
   client = connect_mqtt()
 
   while True:
+    clogger.debug('Fetching data')
     data = api.query_device_data( cfg['PV_DEVICE_ID'] )
     if data != False:
+      clogger.info('Data received, sending to MQTT.')
       post_mqtt_alive( client, "ON" )
       #post_mqtt_device_data_json( api, client, data )
       post_mqtt_device_data_single_recursive( api, client, data)
     else:
+      clogger.warn('No data received, device appears to be offline.')
       post_mqtt_alive( client, "OFF" ) 
     time.sleep(int(cfg['MQTT_INTERVAL']))
 
