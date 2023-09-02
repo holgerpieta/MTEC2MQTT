@@ -132,6 +132,54 @@ def post_mqtt_device_data_json( api, client, data):
   else:
     clogger.error("Message could not be sent! (rc=" + string(send_return.rc) +")")
 
+# These units need to be rescaled
+# Key is the unit to convert. Value is the factor to scale the value with and the new unit after rescaling.
+rescale_units = {
+    'kW': (1000, 'W'),
+    '%': (1, 'perc'),
+    '℃': (1, 'C'),
+}
+def convert_units(topic, value):
+    # Is it already an int or a float?
+    if isinstance(value, int) or isinstance(value, float):
+        # Nothing to convert
+        return topic, value
+    # Can it be converted into an int?
+    try:
+        converted_value = int(value)
+        return topic, converted_value
+    except ValueError:
+        # No, it cannot.
+        pass
+    # Can it be converted into a float?
+    try:
+        converted_value = float(value)
+        return topic, converted_value
+    except ValueError:
+        # No, it cannot.
+        pass
+    # Split at whitespaces
+    split_values = value.split()
+    # Cannot be a number plus unit if the number of elements after splitting is not exactly two.
+    if len(split_values) != 2:
+        return topic, value
+    # To be a number plus unit, the first element must be convertable to a float.
+    try:
+        converted_value = float(split_values[0])
+    except ValueError:
+        # Value is not a number
+        return topic, value
+    # Extract unit
+    unit = split_values[1]
+    # Convert value and unit, if it is in the rescaling dict.
+    if unit in rescale_units:
+        factor, unit = rescale_units[unit]
+        converted_value *= factor
+    # Add the unit to the end of the topic
+    topic += '_' + unit
+    # All done
+    return topic, converted_value
+    
 def convert_to_output(json_obj, prefix=""):
     result = []
     for key, value in json_obj.items():
@@ -139,9 +187,9 @@ def convert_to_output(json_obj, prefix=""):
         if isinstance(value, dict):
             result.extend(convert_to_output(value, prefix + key + "/"))
         else:
+            key, value = convert_units(key, value) # Convert (normalize) the units
             obj[prefix + key] = value
             result.append(obj)
-            #result.append(prefix + key + ":" + str(value))
     return result
 
 def post_mqtt_device_data_single_recursive( api , client , data, topic_sub=''):
