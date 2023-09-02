@@ -83,6 +83,10 @@ def connect_mqtt():
   
   #client.connect(broker, port, 60)
   client.connect(broker, port)
+  # Connection may take a while and at least one sleep is required to give control to the MQTT thread to finalize the connection.
+  while not client.is_connected():
+      clogger.info('Waiting for connection')
+      time.sleep(1)
   return client
 
 #-----------------------------
