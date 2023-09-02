@@ -1,0 +1,26 @@
+[Unit]
+Description=Podman container-mtec2mqtt.service
+Wants=network.target
+After=network-online.target
+#BindsTo=pod-smart-home.service
+Wants=container-smart-home_mosquitto.service container-smart-home_node-red.service
+After=container-smart-home_mosquitto.service container-smart-home_node-red.service
+StartLimitIntervalSec=20m
+StartLimitBurst=3
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+Restart=always
+RestartSec=300
+
+#Restart=no
+TimeoutStopSec=70
+ExecStartPre=/bin/rm -f %t/container-mtec2mqtt.pid %t/container-mtec2mqtt.ctr-id
+ExecStart=/usr/bin/podman run --conmon-pidfile %t/container-mtec2mqtt.pid --cidfile %t/container-mtec2mqtt.ctr-id --cgroups=no-conmon --replace -dt --label io.containers.autoupdate=image --name mtec2mqtt --net=host mtec2mqtt:latest
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/container-mtec2mqtt.ctr-id -t 10
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/container-mtec2mqtt.ctr-id
+PIDFile=%t/container-mtec2mqtt.pid
+Type=forking
+
+[Install]
+WantedBy=multi-user.target default.target
