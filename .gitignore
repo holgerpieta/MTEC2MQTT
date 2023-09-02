@@ -10,3 +10,4 @@ config.yaml
 .vscode/launch.json
 .vscode
 mtec2mqtt.log
+*~
