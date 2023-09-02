@@ -70,6 +70,10 @@ def connect_mqtt():
 
   # Set Connecting Client ID
   client = mqtt_client.Client(client_id)
+  # start the event loop, otherwise callbacks and automatic reconnect doesn't work
+  client.loop_start()
+  client.will_set(f'{topic_base}/status', payload='offline', qos=2, retain=True)
+  clogger.debug(f'Last will: Topic: {client._will_topic} - Payload: {client._will_payload}')
 
   if user != "" and password != "":
     client.username_pw_set(username, password)
